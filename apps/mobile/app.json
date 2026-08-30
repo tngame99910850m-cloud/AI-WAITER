@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "AI Waiter",
+    "slug": "ai-waiter",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "aiwaiter",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1220"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.aiwaiter.app" },
+    "android": {
+      "package": "com.aiwaiter.app",
+      "adaptiveIcon": { "backgroundColor": "#0B1220" }
+    },
+    "web": { "bundler": "metro" },
+    "extra": {
+      "apiUrl": "http://localhost:4000"
+    }
+  }
+}
