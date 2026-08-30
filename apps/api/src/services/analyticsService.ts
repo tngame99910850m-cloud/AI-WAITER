@@ -1,9 +1,12 @@
 import type { AnalyticsEvent } from '@ai-waiter/shared';
 import { store } from '../data/store.js';
+import { persistence, persistBestEffort } from '../db/txnRepo.js';
 
 export function recordEvent(event: AnalyticsEvent): void {
   const t = store.tenant(event.restaurantId);
   t.analytics.push(event);
+  // Append-only: mirror to the durable backend without blocking the response.
+  persistBestEffort(() => persistence().saveAnalytics(event, new Date().toISOString()));
 }
 
 export interface AnalyticsSummary {

@@ -119,7 +119,7 @@ export function publicRouter(): Router {
     validateBody(createServiceRequestSchema),
     requireTenant,
     asyncHandler(async (req, res) => {
-      const request = createServiceRequest(req.body);
+      const request = await createServiceRequest(req.body);
       res.status(201).json({ request });
     }),
   );

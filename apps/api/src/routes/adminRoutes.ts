@@ -64,7 +64,7 @@ export function adminRouter(): Router {
     requireTenant,
     validateBody(z.object({ status: serviceRequestStatusSchema })),
     asyncHandler(async (req, res) => {
-      const updated = updateServiceRequestStatus(
+      const updated = await updateServiceRequestStatus(
         param(req, "restaurantId"),
         param(req, "id"),
         req.body.status,

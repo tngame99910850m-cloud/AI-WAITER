@@ -1,15 +1,18 @@
--- AI Waiter — initial schema (PostgreSQL / Supabase compatible)
+-- AI Waiter — initial schema (PostgreSQL 13+ / Supabase compatible)
 --
--- Multi-tenant design: every tenant-scoped table carries restaurant_id and is
--- protected by row-level security so a tenant can never read another's data.
--- Money is stored as integer minor units (amount_minor) + currency, never float.
+-- Everything lives in a dedicated `ai_waiter` schema so the platform can be
+-- deployed into a shared database without colliding with other apps' tables.
+-- Multi-tenant: every tenant-scoped table carries restaurant_id and is protected
+-- by row-level security. Money is stored as integer minor units + currency
+-- (never float). gen_random_uuid() is core in PG13+ (no pgcrypto needed).
 
-create extension if not exists "pgcrypto";
+create schema if not exists ai_waiter;
+set search_path to ai_waiter, public;
 
 -- ---------------------------------------------------------------------------
 -- Tenancy & identity
 -- ---------------------------------------------------------------------------
-create table restaurants (
+create table if not exists restaurants (
   id            text primary key,
   name          text not null,
   currency      char(3) not null default 'QAR',
@@ -22,7 +25,7 @@ create table restaurants (
   updated_at    timestamptz not null default now()
 );
 
-create table tables (
+create table if not exists tables (
   id            text not null,
   restaurant_id text not null references restaurants(id) on delete cascade,
   number        text not null,
@@ -31,7 +34,7 @@ create table tables (
 );
 
 -- Staff / operators for the admin dashboard (customers are anonymous by table).
-create table users (
+create table if not exists users (
   id            uuid primary key default gen_random_uuid(),
   restaurant_id text references restaurants(id) on delete cascade,
   email         text not null unique,
@@ -43,7 +46,7 @@ create table users (
 -- ---------------------------------------------------------------------------
 -- Menu
 -- ---------------------------------------------------------------------------
-create table categories (
+create table if not exists categories (
   id            text not null,
   restaurant_id text not null references restaurants(id) on delete cascade,
   name          text not null,
@@ -52,7 +55,7 @@ create table categories (
   primary key (restaurant_id, id)
 );
 
-create table allergens (
+create table if not exists allergens (
   id            text not null,
   restaurant_id text not null references restaurants(id) on delete cascade,
   key           text not null,
@@ -60,7 +63,7 @@ create table allergens (
   primary key (restaurant_id, id)
 );
 
-create table ingredients (
+create table if not exists ingredients (
   id            text not null,
   restaurant_id text not null references restaurants(id) on delete cascade,
   name          text not null,
@@ -68,7 +71,7 @@ create table ingredients (
   primary key (restaurant_id, id)
 );
 
-create table products (
+create table if not exists products (
   id               text not null,
   restaurant_id    text not null references restaurants(id) on delete cascade,
   category_id      text not null,
@@ -86,7 +89,7 @@ create table products (
   primary key (restaurant_id, id)
 );
 
-create table product_sizes (
+create table if not exists product_sizes (
   id               text not null,
   restaurant_id    text not null,
   product_id       text not null,
@@ -96,7 +99,7 @@ create table product_sizes (
   foreign key (restaurant_id, product_id) references products(restaurant_id, id) on delete cascade
 );
 
-create table modifier_groups (
+create table if not exists modifier_groups (
   id            text not null,
   restaurant_id text not null,
   product_id    text not null,
@@ -108,7 +111,7 @@ create table modifier_groups (
   foreign key (restaurant_id, product_id) references products(restaurant_id, id) on delete cascade
 );
 
-create table modifiers (
+create table if not exists modifiers (
   id                 text not null,
   restaurant_id      text not null,
   product_id         text not null,
@@ -123,7 +126,7 @@ create table modifiers (
     references modifier_groups(restaurant_id, product_id, id) on delete cascade
 );
 
-create table promotions (
+create table if not exists promotions (
   id            text not null,
   restaurant_id text not null references restaurants(id) on delete cascade,
   title         text not null,
@@ -133,7 +136,7 @@ create table promotions (
   primary key (restaurant_id, id)
 );
 
-create table upsell_rules (
+create table if not exists upsell_rules (
   id                text not null,
   restaurant_id     text not null references restaurants(id) on delete cascade,
   when_product_ids  text[] not null default '{}',
@@ -148,7 +151,7 @@ create table upsell_rules (
 -- ---------------------------------------------------------------------------
 -- Ordering
 -- ---------------------------------------------------------------------------
-create table orders (
+create table if not exists orders (
   id                text primary key,
   restaurant_id     text not null references restaurants(id) on delete cascade,
   table_id          text,
@@ -165,10 +168,10 @@ create table orders (
   updated_at        timestamptz not null default now(),
   unique (restaurant_id, idempotency_key)
 );
-create index orders_restaurant_created_idx on orders (restaurant_id, created_at desc);
-create index orders_restaurant_status_idx on orders (restaurant_id, status);
+create index if not exists orders_restaurant_created_idx on orders (restaurant_id, created_at desc);
+create index if not exists orders_restaurant_status_idx on orders (restaurant_id, status);
 
-create table order_items (
+create table if not exists order_items (
   id                uuid primary key default gen_random_uuid(),
   order_id          text not null references orders(id) on delete cascade,
   restaurant_id     text not null,
@@ -182,9 +185,9 @@ create table order_items (
   line_total_minor  integer not null,
   notes             text not null default ''
 );
-create index order_items_order_idx on order_items (order_id);
+create index if not exists order_items_order_idx on order_items (order_id);
 
-create table order_item_modifiers (
+create table if not exists order_item_modifiers (
   id                 uuid primary key default gen_random_uuid(),
   order_item_id      uuid not null references order_items(id) on delete cascade,
   modifier_group_id  text not null,
@@ -196,14 +199,14 @@ create table order_item_modifiers (
 -- ---------------------------------------------------------------------------
 -- Conversations & AI
 -- ---------------------------------------------------------------------------
-create table conversations (
+create table if not exists conversations (
   id            uuid primary key default gen_random_uuid(),
   restaurant_id text not null references restaurants(id) on delete cascade,
   table_id      text,
   created_at    timestamptz not null default now()
 );
 
-create table messages (
+create table if not exists messages (
   id               uuid primary key default gen_random_uuid(),
   conversation_id  uuid not null references conversations(id) on delete cascade,
   restaurant_id    text not null,
@@ -212,9 +215,9 @@ create table messages (
   intent           text,
   created_at       timestamptz not null default now()
 );
-create index messages_conversation_idx on messages (conversation_id, created_at);
+create index if not exists messages_conversation_idx on messages (conversation_id, created_at);
 
-create table ai_recommendations (
+create table if not exists ai_recommendations (
   id               uuid primary key default gen_random_uuid(),
   restaurant_id    text not null references restaurants(id) on delete cascade,
   conversation_id  uuid references conversations(id) on delete set null,
@@ -226,7 +229,7 @@ create table ai_recommendations (
 -- ---------------------------------------------------------------------------
 -- Service, analytics, audit
 -- ---------------------------------------------------------------------------
-create table service_requests (
+create table if not exists service_requests (
   id            uuid primary key default gen_random_uuid(),
   restaurant_id text not null references restaurants(id) on delete cascade,
   table_id      text,
@@ -235,9 +238,9 @@ create table service_requests (
   status        text not null default 'open' check (status in ('open','acknowledged','resolved')),
   created_at    timestamptz not null default now()
 );
-create index service_requests_restaurant_status_idx on service_requests (restaurant_id, status);
+create index if not exists service_requests_restaurant_status_idx on service_requests (restaurant_id, status);
 
-create table analytics_events (
+create table if not exists analytics_events (
   id            uuid primary key default gen_random_uuid(),
   restaurant_id text not null references restaurants(id) on delete cascade,
   table_id      text,
@@ -246,9 +249,9 @@ create table analytics_events (
   client_ts     timestamptz,
   received_at   timestamptz not null default now()
 );
-create index analytics_events_restaurant_name_idx on analytics_events (restaurant_id, name, received_at desc);
+create index if not exists analytics_events_restaurant_name_idx on analytics_events (restaurant_id, name, received_at desc);
 
-create table payments (
+create table if not exists payments (
   id            uuid primary key default gen_random_uuid(),
   restaurant_id text not null references restaurants(id) on delete cascade,
   order_id      text references orders(id) on delete set null,
@@ -259,7 +262,7 @@ create table payments (
   created_at    timestamptz not null default now()
 );
 
-create table audit_log (
+create table if not exists audit_log (
   id            uuid primary key default gen_random_uuid(),
   restaurant_id text not null references restaurants(id) on delete cascade,
   actor         text not null,
@@ -268,11 +271,12 @@ create table audit_log (
   meta          jsonb not null default '{}'::jsonb,
   created_at    timestamptz not null default now()
 );
-create index audit_log_restaurant_idx on audit_log (restaurant_id, created_at desc);
+create index if not exists audit_log_restaurant_idx on audit_log (restaurant_id, created_at desc);
 
 -- ---------------------------------------------------------------------------
--- Row-level security (tenant isolation). The API sets `app.restaurant_id` per
--- request; policies restrict every row to the active tenant.
+-- Row-level security (tenant isolation). The API's trusted service connection
+-- (owner role) bypasses RLS; these policies protect any non-owner role (e.g. a
+-- future PostgREST/anon path). The app sets `app.restaurant_id` per request.
 -- ---------------------------------------------------------------------------
 alter table orders            enable row level security;
 alter table order_items       enable row level security;
@@ -281,11 +285,15 @@ alter table analytics_events  enable row level security;
 alter table conversations     enable row level security;
 alter table messages          enable row level security;
 
+drop policy if exists tenant_isolation_orders on orders;
 create policy tenant_isolation_orders on orders
   using (restaurant_id = current_setting('app.restaurant_id', true));
+drop policy if exists tenant_isolation_service on service_requests;
 create policy tenant_isolation_service on service_requests
   using (restaurant_id = current_setting('app.restaurant_id', true));
+drop policy if exists tenant_isolation_analytics on analytics_events;
 create policy tenant_isolation_analytics on analytics_events
   using (restaurant_id = current_setting('app.restaurant_id', true));
+drop policy if exists tenant_isolation_conversations on conversations;
 create policy tenant_isolation_conversations on conversations
   using (restaurant_id = current_setting('app.restaurant_id', true));

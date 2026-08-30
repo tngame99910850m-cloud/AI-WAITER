@@ -67,6 +67,9 @@ Point it at your API by setting `EXPO_PUBLIC_API_URL` (see `apps/mobile/.env.exa
 - **Offline provider** — the deterministic `rules` AI provider needs no API key,
   so the app works and is fully testable out of the box; set
   `AI_PROVIDER=anthropic` + `ANTHROPIC_API_KEY` to use Claude.
+- **Pluggable persistence** — `PERSISTENCE=memory` (default, zero-setup) or
+  `PERSISTENCE=postgres` to load tenants from Postgres and write-through orders,
+  service requests, analytics and audit. See [`docs/PERSISTENCE.md`](docs/PERSISTENCE.md).
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design and roadmap.
 

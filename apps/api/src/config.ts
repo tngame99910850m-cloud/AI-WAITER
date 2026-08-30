@@ -16,6 +16,21 @@ const configSchema = z.object({
   ADMIN_API_KEY: z.string().default('dev-admin-key'),
   /** Which POS adapter to use. `memory` is the built-in reference adapter. */
   POS_ADAPTER: z.enum(['memory']).default('memory'),
+  /**
+   * Persistence backend. `memory` seeds in-process demo data. `postgres` loads
+   * tenants from Postgres at boot and write-through persists orders, service
+   * requests, analytics and audit entries.
+   */
+  PERSISTENCE: z.enum(['memory', 'postgres']).default('memory'),
+  /** Postgres connection string (server only — never shipped to the client). */
+  DATABASE_URL: z.string().optional(),
+  /** Schema the AI Waiter tables live in. */
+  DB_SCHEMA: z.string().default('ai_waiter'),
+  /** When true, a failed Postgres connection aborts startup instead of falling
+   * back to in-memory seed data. */
+  DB_REQUIRED: z.coerce.boolean().default(false),
+  /** Enable TLS to Postgres (Supabase requires TLS). */
+  DB_SSL: z.coerce.boolean().default(true),
   /** LLM provider for the AI orchestrator. `rules` needs no external API. */
   AI_PROVIDER: z.enum(['rules', 'anthropic']).default('rules'),
   ANTHROPIC_API_KEY: z.string().optional(),
@@ -44,6 +59,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   }
   cached = parsed.data;
   return cached;
+}
+
+/** Test-only: clear the cached config so a new env can be picked up. */
+export function __resetConfig(): void {
+  cached = null;
 }
 
 export function clientApiKeys(cfg: Config): Set<string> {

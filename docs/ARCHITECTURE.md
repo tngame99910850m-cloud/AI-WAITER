@@ -119,7 +119,10 @@ handling: cached menu, loading skeletons, retry, and idempotent order submission
 8. ✅ Admin web dashboard UI (`apps/admin`) — live orders board with status
    transitions, service-request queue, analytics overview (KPIs + top items),
    and audit log; served by the API at `/admin`
-9. ⏳ Postgres-backed persistence (replace in-memory store)
+9. ✅ Postgres-backed persistence (`PERSISTENCE=postgres`) — tenants loaded from
+   an isolated `ai_waiter` schema into an in-memory read projection, with
+   write-through of orders/service-requests/analytics/audit; schema + demo data
+   applied to the attached Supabase project. See [`docs/PERSISTENCE.md`](PERSISTENCE.md).
 10. ⏳ Real-time order status (websocket/SSE) + push notifications
 11. ⏳ Admin menu editing (CRUD for categories/products/modifiers/images)
 12. ⏳ Voice STT integration on device + payments adapter
