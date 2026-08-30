@@ -71,6 +71,12 @@ Point it at your API by setting `EXPO_PUBLIC_API_URL` (see `apps/mobile/.env.exa
   `PERSISTENCE=postgres` to load tenants from Postgres and write-through orders,
   service requests, analytics and audit. See [`docs/PERSISTENCE.md`](docs/PERSISTENCE.md).
 
+## Deployment
+
+The API ships as a container (`Dockerfile` at the repo root) — deploy to Render,
+Fly.io, or Railway. See [`docs/DEPLOY.md`](docs/DEPLOY.md). The Expo app is
+distributed separately via EAS / the app stores.
+
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design and roadmap.
 
 ## License
