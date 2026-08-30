@@ -1,0 +1,46 @@
+name: Build Android APK
+
+# Manual only — click "Run workflow" in the Actions tab to build a downloadable
+# APK. Kept off push/PR so it never gates the PR. The APK is signed with the
+# debug keystore (fine for sideloading/testing); swap in a real keystore for
+# Play Store release.
+on:
+  workflow_dispatch:
+
+jobs:
+  apk:
+    name: Assemble release APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build release APK
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-waiter-android-apk
+          path: apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error

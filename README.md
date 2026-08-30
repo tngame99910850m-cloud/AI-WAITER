@@ -15,7 +15,7 @@ security, and tests.
 | --- | --- |
 | `packages/shared` | Domain models, Zod schemas, and the pricing engine (single source of truth) |
 | `apps/api` | Backend REST API — multi-tenant, POS-abstracted, AI orchestration, tested |
-| `apps/mobile` | Expo / React Native customer app |
+| `apps/mobile` | Bare React Native customer app (no Expo) |
 | `apps/admin` | Restaurant operator dashboard (static web app, served at `/admin`) |
 | `db/migrations` | PostgreSQL schema (production persistence) |
 | `docs` | [Architecture & analysis](docs/ARCHITECTURE.md), [API reference](docs/API.md) |
@@ -44,14 +44,17 @@ curl -s -X POST localhost:4000/v1/chat \
   -d '{"restaurantId":"juniors","message":"I want something spicy with chicken, no onions, add cheese, make it a meal"}'
 ```
 
-The mobile app is a separate, self-contained Expo project:
+The mobile app is a separate, self-contained **bare React Native** project (no Expo):
 
 ```bash
 cd apps/mobile
 npm install
-npm start                # Expo — scan QR with Expo Go, or press i / a
+npm start                # Metro bundler
+npm run android          # build + run on an emulator/device (needs Android SDK)
 ```
-Point it at your API by setting `EXPO_PUBLIC_API_URL` (see `apps/mobile/.env.example`).
+Point it at your API by editing `apps/mobile/src/config/env.ts`. For a
+zero-setup APK, use the **Actions → "Build Android APK"** workflow. See
+[`apps/mobile/README.md`](apps/mobile/README.md).
 
 ## Highlights
 
@@ -74,8 +77,8 @@ Point it at your API by setting `EXPO_PUBLIC_API_URL` (see `apps/mobile/.env.exa
 ## Deployment
 
 The API ships as a container (`Dockerfile` at the repo root) — deploy to Render,
-Fly.io, or Railway. See [`docs/DEPLOY.md`](docs/DEPLOY.md). The Expo app is
-distributed separately via EAS / the app stores.
+Fly.io, or Railway. See [`docs/DEPLOY.md`](docs/DEPLOY.md). The React Native app
+is built separately (Gradle/Xcode or the "Build Android APK" Actions workflow).
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design and roadmap.
 

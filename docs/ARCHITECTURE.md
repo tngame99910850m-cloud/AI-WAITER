@@ -21,7 +21,7 @@ A TypeScript monorepo with three deployables and one shared contract package:
 ai-waiter/
 ├─ packages/shared     # Domain models + Zod schemas + pricing engine (source of truth)
 ├─ apps/api            # Backend REST API: multi-tenant, POS-abstracted, AI orchestration
-├─ apps/mobile         # Expo (React Native) customer app
+├─ apps/mobile         # Bare React Native (no Expo) customer app
 ├─ db/migrations       # PostgreSQL schema (production persistence)
 └─ docs                # This document + API reference
 ```
@@ -89,8 +89,9 @@ never create two orders.
 
 ## 7. Mobile UI architecture
 
-Expo + React Native + TypeScript. State via a small store; a typed API client
-generated against the shared schemas; a design-system layer (theme, spacing,
+Bare React Native (React Native Community CLI) + TypeScript — no Expo runtime,
+with fully editable `android/`/`ios/` native projects. State via a small store; a
+typed API client against the shared schemas; a design-system layer (theme, spacing,
 typography) driven by per-restaurant branding. Screens: Welcome → Restaurant →
 Chat (with recommendation & upsell cards) → Menu → Product/modifiers → Cart →
 Confirmation → Order status, plus Table Service actions. Offline/poor-Wi-Fi

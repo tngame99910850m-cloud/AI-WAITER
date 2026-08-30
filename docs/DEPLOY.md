@@ -77,7 +77,7 @@ use its public URL as the app's `EXPO_PUBLIC_API_URL`.
 
 ## Notes
 
-- The image excludes `apps/mobile` (the Expo app is built and distributed
-  separately via EAS/app stores).
+- The image excludes `apps/mobile` (the bare React Native app is built and
+  distributed separately via Gradle/Xcode or the "Build Android APK" workflow).
 - For `PERSISTENCE=postgres`, apply `db/migrations/0001_init.sql` and seed the
   database first (see [`PERSISTENCE.md`](PERSISTENCE.md)).

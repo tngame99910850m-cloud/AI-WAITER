@@ -9,9 +9,10 @@ import type {
   ServiceRequestType,
   TableInfo,
 } from '../types';
+import { API_URL as CONFIG_API_URL, API_KEY as CONFIG_API_KEY } from '../config/env';
 
-const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
-const API_KEY = process.env.EXPO_PUBLIC_API_KEY ?? 'dev-client-key';
+const API_URL = CONFIG_API_URL.replace(/\/$/, '');
+const API_KEY = CONFIG_API_KEY;
 
 export class ApiError extends Error {
   constructor(
