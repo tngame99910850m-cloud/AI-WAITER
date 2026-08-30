@@ -116,11 +116,14 @@ handling: cached menu, loading skeletons, retry, and idempotent order submission
 5. ✅ Backend API (auth, validation, rate limit, errors, audit) + tests
 6. ✅ Admin API (orders, service requests, analytics, audit)
 7. ✅ Mobile app (core customer flow, chat, cart, confirmation, service, status)
-8. ⏳ Postgres-backed persistence (replace in-memory store)
-9. ⏳ Real-time order status (websocket/SSE) + push notifications
-10. ⏳ Admin web dashboard UI (backend already exists)
-11. ⏳ Voice STT integration on device + payments adapter
-12. ⏳ E2E tests, load testing, observability, CI/CD hardening
+8. ✅ Admin web dashboard UI (`apps/admin`) — live orders board with status
+   transitions, service-request queue, analytics overview (KPIs + top items),
+   and audit log; served by the API at `/admin`
+9. ⏳ Postgres-backed persistence (replace in-memory store)
+10. ⏳ Real-time order status (websocket/SSE) + push notifications
+11. ⏳ Admin menu editing (CRUD for categories/products/modifiers/images)
+12. ⏳ Voice STT integration on device + payments adapter
+13. ⏳ E2E tests, load testing, observability, CI/CD hardening
 
 ## 10. Testing
 

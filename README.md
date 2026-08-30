@@ -16,6 +16,7 @@ security, and tests.
 | `packages/shared` | Domain models, Zod schemas, and the pricing engine (single source of truth) |
 | `apps/api` | Backend REST API — multi-tenant, POS-abstracted, AI orchestration, tested |
 | `apps/mobile` | Expo / React Native customer app |
+| `apps/admin` | Restaurant operator dashboard (static web app, served at `/admin`) |
 | `db/migrations` | PostgreSQL schema (production persistence) |
 | `docs` | [Architecture & analysis](docs/ARCHITECTURE.md), [API reference](docs/API.md) |
 
@@ -37,6 +38,7 @@ npm run dev:api          # http://localhost:4000
 
 # 5. Try it
 curl -s localhost:4000/health
+# Admin dashboard: open http://localhost:4000/admin  (admin key: dev-admin-key)
 curl -s -X POST localhost:4000/v1/chat \
   -H 'content-type: application/json' -H 'x-api-key: dev-client-key' \
   -d '{"restaurantId":"juniors","message":"I want something spicy with chicken, no onions, add cheese, make it a meal"}'

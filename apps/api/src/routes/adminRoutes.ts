@@ -15,6 +15,20 @@ import { summarize } from '../services/analyticsService.js';
 export function adminRouter(): Router {
   const r = Router({ mergeParams: true });
 
+  // Tenant list for the dashboard's restaurant switcher (admin-scoped).
+  r.get(
+    '/restaurants',
+    asyncHandler(async (_req, res) => {
+      res.json({
+        restaurants: store.listRestaurants().map((rest) => ({
+          id: rest.id,
+          name: rest.name,
+          currency: rest.currency,
+        })),
+      });
+    }),
+  );
+
   r.get(
     '/:restaurantId/orders',
     requireTenant,

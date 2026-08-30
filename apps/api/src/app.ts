@@ -1,6 +1,8 @@
 import express, { type Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadConfig, corsOrigins, type Config } from './config.js';
 import {
   rateLimit,
@@ -31,6 +33,26 @@ export function buildApp(cfg: Config = loadConfig()): Express {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', ts: new Date().toISOString() });
   });
+
+  // Admin dashboard (static SPA). Served with a route-scoped CSP that permits
+  // its inline assets. The page collects the admin key at runtime and sends it
+  // as x-admin-key to the admin API below — no secret is baked into the page.
+  const adminDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../admin/public');
+  app.use(
+    '/admin',
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          connectSrc: ["'self'"],
+          imgSrc: ["'self'", 'data:'],
+        },
+      },
+    }),
+    express.static(adminDir),
+  );
 
   // Admin API: separate admin key. Mounted before /v1 so admin paths never hit
   // the customer api-key middleware.
