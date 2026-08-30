@@ -1,9 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm install",
-  "buildCommand": "npm run build --workspace @ai-waiter/shared && npm run build --workspace @ai-waiter/api",
+  "outputDirectory": "public",
   "functions": {
-    "api/index.ts": { "maxDuration": 30 }
+    "api/index.js": {
+      "maxDuration": 30,
+      "includeFiles": "apps/admin/public/**"
+    }
   },
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
