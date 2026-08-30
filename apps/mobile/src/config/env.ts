@@ -12,5 +12,8 @@
  *  - A real device needs your machine's LAN IP or a deployed API URL.
  *  - Only a public client key belongs here — never a server secret.
  */
-export const API_URL: string = 'http://10.0.2.2:4000';
+// Deployed API (Vercel). For local dev against a machine, use http://10.0.2.2:4000
+// on the Android emulator or your LAN IP on a real device.
+export const API_URL: string =
+  'https://ai-waiter-api-git-claude-31bc34-tngame99910850m-clouds-projects.vercel.app';
 export const API_KEY: string = 'dev-client-key';
