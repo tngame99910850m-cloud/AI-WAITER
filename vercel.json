@@ -1,12 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm install",
+  "buildCommand": "echo 'no build step — api/index.js is a prebuilt bundle'",
   "outputDirectory": "public",
-  "functions": {
-    "api/index.js": {
-      "maxDuration": 30,
-      "includeFiles": "apps/admin/public/**"
-    }
-  },
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }

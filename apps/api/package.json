@@ -9,7 +9,7 @@
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "db:push": "tsx src/db/push.ts",
-    "build:vercel-fn": "npm run build && esbuild vercel-function.mjs --bundle --platform=node --format=cjs --external:express --external:cors --external:helmet --external:pino --external:pino-http --external:zod --external:pg --outfile=../../api/index.js",
+    "build:vercel-fn": "npm run build && esbuild vercel-function.mjs --bundle --platform=node --format=cjs --outfile=../../api/index.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
