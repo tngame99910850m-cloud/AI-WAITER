@@ -14,6 +14,7 @@ import {
 import { errorHandler } from './errors.js';
 import { publicRouter } from './routes/publicRoutes.js';
 import { adminRouter } from './routes/adminRoutes.js';
+import { chatRouter } from './routes/chatRoutes.js';
 import { logger } from './logger.js';
 
 /**
@@ -100,6 +101,10 @@ export function buildApp(cfg: Config = loadConfig()): Express {
 
   // Customer API: api-key + rate limited.
   app.use('/v1', rateLimit(cfg), requireClientAuth(cfg), publicRouter());
+
+  // General Claude chatbot: api-key + rate limited. Distinct from the grounded
+  // AI-waiter orchestrator under /v1/chat.
+  app.use('/api/chat', rateLimit(cfg), requireClientAuth(cfg), chatRouter());
 
   // Unknown route -> 404 JSON.
   app.use((_req, res) => {

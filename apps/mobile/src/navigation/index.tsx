@@ -7,6 +7,7 @@ import { palette } from '../theme';
 import { WelcomeScreen } from '../screens/WelcomeScreen';
 import { RestaurantScreen } from '../screens/RestaurantScreen';
 import { ChatScreen } from '../screens/ChatScreen';
+import { AssistantScreen } from '../screens/AssistantScreen';
 import { MenuScreen } from '../screens/MenuScreen';
 import { ServiceScreen } from '../screens/ServiceScreen';
 import { ProductScreen } from '../screens/ProductScreen';
@@ -46,6 +47,7 @@ function MainTabs() {
       }}
     >
       <Tab.Screen name="AI Waiter" component={ChatScreen} options={{ tabBarIcon: tabIcon('💬') }} />
+      <Tab.Screen name="Assistant" component={AssistantScreen} options={{ tabBarIcon: tabIcon('🤖') }} />
       <Tab.Screen name="Menu" component={MenuScreen} options={{ tabBarIcon: tabIcon('📋') }} />
       <Tab.Screen name="Service" component={ServiceScreen} options={{ tabBarIcon: tabIcon('🔔') }} />
     </Tab.Navigator>

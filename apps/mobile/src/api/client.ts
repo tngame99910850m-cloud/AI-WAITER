@@ -86,6 +86,11 @@ export const api = {
     cartProductIds: string[];
   }) => request<{ result: ChatResult }>('/v1/chat', { method: 'POST', body: input }).then((r) => r.result),
 
+  assistant: (input: { message: string; history: ChatMessage[] }) =>
+    request<{ reply: string }>('/api/chat', { method: 'POST', body: input, timeoutMs: 30_000 }).then(
+      (r) => r.reply,
+    ),
+
   createOrder: (
     input: {
       restaurantId: string;
