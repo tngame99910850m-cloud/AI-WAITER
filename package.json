@@ -1,0 +1,21 @@
+{
+  "name": "ai-waiter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Waiter — a multi-tenant AI-powered ordering platform for restaurants",
+  "workspaces": [
+    "packages/*",
+    "apps/api"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build --workspace @ai-waiter/shared && npm run build --workspace @ai-waiter/api",
+    "test": "npm run test --workspace @ai-waiter/shared && npm run test --workspace @ai-waiter/api",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "dev:api": "npm run dev --workspace @ai-waiter/api"
+  },
+  "license": "UNLICENSED"
+}

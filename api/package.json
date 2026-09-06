@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "name": "ai-waiter-api-fn",
+  "version": "0.1.0",
+  "description": "Vercel serverless entry — self-contained bundle, no dependencies to install."
+}
