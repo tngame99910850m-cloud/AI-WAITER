@@ -33,6 +33,18 @@ const SYSTEM_PROMPT =
 export function chatRouter(): Router {
   const router = Router();
 
+  // Safe diagnostic: reports ONLY whether the key is present (boolean) plus the
+  // model and NODE_ENV — never the key value. Lets you confirm which Vercel
+  // environment actually has ANTHROPIC_API_KEY set.
+  router.get('/', (_req: Request, res: Response) => {
+    const cfg = loadConfig();
+    res.json({
+      configured: Boolean(cfg.ANTHROPIC_API_KEY),
+      model: cfg.ANTHROPIC_MODEL,
+      nodeEnv: cfg.NODE_ENV,
+    });
+  });
+
   router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { message, history } = bodySchema.parse(req.body);
