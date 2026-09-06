@@ -37199,7 +37199,12 @@ var cached = null;
 function loadConfig(env = process.env) {
   if (cached)
     return cached;
-  const parsed = configSchema.safeParse(env);
+  const cleaned = {};
+  for (const [k, v] of Object.entries(env)) {
+    if (typeof v === "string" && v !== "")
+      cleaned[k] = v;
+  }
+  const parsed = configSchema.safeParse(cleaned);
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
     throw new Error(`Invalid environment configuration:

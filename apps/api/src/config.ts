@@ -49,7 +49,14 @@ let cached: Config | null = null;
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   if (cached) return cached;
-  const parsed = configSchema.safeParse(env);
+  // Treat empty-string env values (common on Vercel when a var is added with no
+  // value) as unset, so schema defaults apply instead of failing enum validation
+  // and crashing function init.
+  const cleaned: Record<string, string> = {};
+  for (const [k, v] of Object.entries(env)) {
+    if (typeof v === 'string' && v !== '') cleaned[k] = v;
+  }
+  const parsed = configSchema.safeParse(cleaned);
   if (!parsed.success) {
     // Fail fast with a clear message.
     const issues = parsed.error.issues
